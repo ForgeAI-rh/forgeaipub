@@ -28,8 +28,8 @@ const MODULES = [
 
 const ROADMAP: Array<[string, string, string]> = [
   ["Phase 0", "Foundation", "In progress"],
-  ["Phase 1", "Agent Genesis", "Testnet build"],
-  ["Phase 2", "The Forge", "Testnet build"],
+  ["Phase 1", "Agent Genesis", "Demo build"],
+  ["Phase 2", "The Forge", "Demo build"],
   ["Phase 3", "Evolution", "Planned"],
   ["Phase 4", "Agent Network", "Planned"],
   ["Phase 5", "Ecosystem", "Exploratory"],
@@ -54,7 +54,7 @@ export default async function Landing() {
           <div className="mx-auto grid max-w-6xl gap-12 px-4 pb-20 pt-16 md:grid-cols-[1.15fr_1fr] md:px-6 md:pt-24">
             <div>
               <div className="label flex items-center gap-2">
-                <span className="size-1.5 bg-forge" /> Season {CURRENT_SEASON} · Open testnet
+                <span className="size-1.5 bg-forge" /> Season {CURRENT_SEASON} · Open demo
               </div>
               <h1 className="mt-6 font-display text-[44px] font-bold leading-[0.95] tracking-tight sm:text-6xl md:text-[76px]">
                 BUILD.

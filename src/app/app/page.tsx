@@ -63,7 +63,7 @@ export default async function Overview({ searchParams }: { searchParams: Promise
   return (
     <div className="space-y-8">
       <PageHead
-        kicker={`${season.name} · Open testnet`}
+        kicker={`${season.name} · Open demo`}
         title="Overview"
         actions={
           <Link href="/app/forge" className="btn btn-primary">

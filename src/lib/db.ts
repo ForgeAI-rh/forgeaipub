@@ -9,7 +9,7 @@ const SCHEMA = 1;
  * Two backends behind one interface:
  *   D1 when running on Cloudflare (binding DB), one row per record.
  *   A JSON file in .data/ for plain `next dev` and self hosting.
- * Callers always get the whole dataset; it is small at testnet scale.
+ * Callers always get the whole dataset; it is small at demo scale.
  */
 
 type D1 = {

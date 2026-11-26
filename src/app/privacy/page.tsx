@@ -7,9 +7,9 @@ export default function Privacy() {
     <>
       <SiteHeader />
       <article className="prose-forge mx-auto max-w-3xl px-4 py-14 md:px-6">
-        <div className="label">Privacy notice · testnet build</div>
+        <div className="label">Privacy notice · demo build</div>
         <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight">Privacy</h1>
-        <p>We collect as little as the product needs to work. This notice describes the current testnet build and will be updated before any public launch.</p>
+        <p>We collect as little as the product needs to work. This notice describes the current demo build and will be updated before any public launch.</p>
 
         <h2>What we store</h2>
         <ul>
@@ -33,7 +33,7 @@ export default function Privacy() {
         <p>This build writes nothing onchain. If onchain features arrive later, private inputs, secrets and execution details will never be placed onchain.</p>
 
         <h2>Retention and deletion</h2>
-        <p>Data is kept for the duration of the testnet season. You can delete your session, agents and runs at any time from Settings. Deletion is immediate and removes your agents from rankings.</p>
+        <p>Data is kept for the duration of the demo season. You can delete your session, agents and runs at any time from Settings. Deletion is immediate and removes your agents from rankings.</p>
       </article>
       <SiteFooter />
     </>

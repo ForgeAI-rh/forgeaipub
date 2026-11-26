@@ -2,7 +2,7 @@
   "name": "forgeai",
   "version": "0.1.0",
   "private": true,
-  "description": "An environment for creating, testing and evolving autonomous agents. Testnet MVP.",
+  "description": "An environment for creating, testing and evolving autonomous agents. Demo MVP.",
   "license": "MIT",
   "engines": {
     "node": ">=24"

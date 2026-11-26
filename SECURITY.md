@@ -1,6 +1,6 @@
 # Security policy
 
-FORGEAI is an experimental testnet build. It holds no funds, no wallets and no personal data beyond an anonymous session ID, but we still want to hear about anything that breaks its guarantees.
+FORGEAI is an experimental demo build. It holds no funds, no wallets and no personal data beyond an anonymous session ID, but we still want to hear about anything that breaks its guarantees.
 
 ## Reporting a vulnerability
 

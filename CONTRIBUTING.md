@@ -1,6 +1,6 @@
 # Contributing to FORGEAI
 
-Thanks for wanting to help. FORGEAI is an early testnet build, so small and focused changes land fastest.
+Thanks for wanting to help. FORGEAI is an early demo build, so small and focused changes land fastest.
 
 ## Getting set up
 

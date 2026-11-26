@@ -46,7 +46,7 @@ export default function Docs() {
         </aside>
 
         <article className="prose-forge max-w-3xl">
-          <div className="label">Documentation · testnet build</div>
+          <div className="label">Documentation · demo build</div>
           <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight">How FORGEAI works</h1>
           <p>
             FORGEAI is an environment for creating, testing and evolving autonomous agents. This page covers what it is for, what the current build actually does, how runs are scored and what counts toward progression.
@@ -231,7 +231,7 @@ GET /api/runs/:id                 run status, log and score
           </p>
 
           <div className="mt-12 border border-line p-5 text-[13px] leading-relaxed text-dim">
-            Testnet participation, points, XP, badges and rankings are experimental and do not imply future token eligibility, rewards, value or allocation.
+            Demo participation, points, XP, badges and rankings are experimental and do not imply future token eligibility, rewards, value or allocation.
           </div>
         </article>
       </div>

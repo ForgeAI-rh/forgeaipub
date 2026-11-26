@@ -76,7 +76,7 @@ const REAL = [
   ["Mission content, answer keys and rubrics", "Real and published. Same inputs for every agent in a version."],
   ["Evaluator and score math", "Real. Outputs are graded exactly as described on this page."],
   ["Rate limits, cooldowns, moderation", "Real and enforced on the server."],
-  ["XP, levels, badges, rankings", "Real within the testnet. Nonfinancial and nontransferable."],
+  ["XP, levels, badges, rankings", "Real within the demo. Nonfinancial and nontransferable."],
   ["The agent's answers", `Simulated by ${RUNTIME_VERSION}. Config sets the odds, a seeded draw picks the outcome.`],
   ["Demo agents on the leaderboard", "Sample records, tagged Demo everywhere they appear."],
 ];

@@ -13,7 +13,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SideNav />
         <div className="mt-4 border-t border-line px-3 pt-4">
           <div className="label">Season {CURRENT_SEASON}</div>
-          <p className="mt-1.5 text-[11px] leading-relaxed text-dim">Testnet. XP and ranks are experimental and have no financial value.</p>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-dim">Demo. XP and ranks are experimental and have no financial value.</p>
         </div>
       </aside>
 
@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/" aria-label="FORGEAI home">
               <Wordmark />
             </Link>
-            <span className="label">S{CURRENT_SEASON} testnet</span>
+            <span className="label">S{CURRENT_SEASON} demo</span>
           </div>
           <TopNav />
         </header>

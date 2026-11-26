@@ -43,7 +43,7 @@ export function SiteFooter() {
         <div>
           <Wordmark />
           <p className="mt-4 max-w-xs text-sm text-steel">Intelligence isn&apos;t given. It&apos;s forged.</p>
-          <p className="mt-6 text-xs text-dim">FORGEAI is a working name. Testnet build, experimental.</p>
+          <p className="mt-6 text-xs text-dim">FORGEAI is a working name. Demo build, experimental.</p>
         </div>
         <FooterCol title="Product" links={[["Launch App", "/app"], ["Missions", "/app/missions"], ["Leaderboard", "/app/leaderboard"], ["Registry", "/app/registry"]]} />
         <FooterCol title="Docs" links={[["How it works", "/how"], ["Overview", "/docs"], ["Scoring", "/docs#scoring"], ["Progression", "/docs#progression"], ["Builder API", "/docs#api"]]} />
@@ -58,7 +58,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-5 text-[11px] leading-relaxed text-dim md:px-6">
-          Testnet participation, points, XP, badges and rankings are experimental and do not imply future token eligibility, rewards, value or allocation.
+          Demo participation, points, XP, badges and rankings are experimental and do not imply future token eligibility, rewards, value or allocation.
         </p>
       </div>
     </footer>

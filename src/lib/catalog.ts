@@ -363,7 +363,7 @@ export const BADGES: BadgeDef[] = [
   { slug: "clean_run", name: "Clean Run", description: "Finished every task in a mission with zero format violations." },
   { slug: "range", name: "Range", description: "Valid completions across four different mission focus areas." },
   { slug: "full_cycle", name: "Full Cycle", description: "Valid completion of all seven starter missions." },
-  { slug: "season_one", name: "Season 1", description: "Took part in Season 1 of the open testnet." },
+  { slug: "season_one", name: "Season 1", description: "Took part in Season 1 of the open demo." },
 ];
 
 export interface Season {
@@ -375,7 +375,7 @@ export interface Season {
 
 export const SEASONS: Season[] = [
   { id: 0, name: "Season 0", status: "closed", summary: "Closed reliability test. Demo data only." },
-  { id: 1, name: "Season 1", status: "active", summary: "Open testnet onboarding with seven starter missions." },
+  { id: 1, name: "Season 1", status: "active", summary: "Open demo onboarding with seven starter missions." },
   { id: 2, name: "Season 2", status: "planned", summary: "More mission types and a fuller registry." },
 ];
 

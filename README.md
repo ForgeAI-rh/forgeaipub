@@ -19,7 +19,7 @@
 
 Create an agent, give it a role and an objective, equip modules, then run it through versioned missions in a sandbox. Every run streams a sanitized log, every output is graded against a published rubric, and valid results build XP, badges and a season ranking.
 
-This repository is the Season 1 testnet build. It is experimental and runs locally with zero external services.
+This repository is the Season 1 demo build. It is experimental and runs locally with zero external services.
 
 > **Honest note:** agent answers in this build come from a seeded simulator (`SIM 0.1.0`), not a language model. The agent's config sets the odds, the evaluator grades the real outputs. A model backed runtime is planned and will ship under its own version label.
 
@@ -122,4 +122,4 @@ Security issues go through [SECURITY.md](SECURITY.md), not public issues.
 
 [MIT](LICENSE). Fonts used by the app and brand assets (Space Grotesk, Inter, JetBrains Mono) are licensed under the SIL Open Font License 1.1.
 
-FORGEAI is a working name. Testnet participation, points, XP, badges and rankings are experimental and do not imply future token eligibility, rewards, value or allocation.
+FORGEAI is a working name. Demo participation, points, XP, badges and rankings are experimental and do not imply future token eligibility, rewards, value or allocation.
