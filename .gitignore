@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.data
+.env
+.env.local
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+.claude/
+.data-ci
+.open-next
+.wrangler
+.dev.vars
+.secrets

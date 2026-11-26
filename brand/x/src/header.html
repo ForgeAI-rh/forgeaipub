@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #111111; }
+  svg { display: block; }
+  .display { font-family: "Space Grotesk"; font-weight: 700; }
+  .sans { font-family: "Inter"; }
+  .mono { font-family: "JetBrains Mono"; font-weight: 500; }
+</style>
+</head>
+<body>
+<!--
+  X header, 1500 x 500.
+  Clear zones: bottom left (x < 400, y > 320) sits under the profile image on desktop.
+  Key content stays between y 70 and y 440 so mobile crops keep it.
+-->
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="minor" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#181818" stroke-width="1"/>
+    </pattern>
+    <pattern id="major" width="100" height="100" patternUnits="userSpaceOnUse" x="80" y="0">
+      <path d="M100 0H0V100" fill="none" stroke="#202020" stroke-width="1"/>
+    </pattern>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#2C2C2C" stroke-width="1.4"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.35"/>
+      <stop offset="0.55" stop-color="#fff" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+    </linearGradient>
+    <mask id="gridmask"><rect width="1500" height="500" fill="url(#fade)"/></mask>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF6A1A" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#FF6A1A" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FF6A1A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base and grid -->
+  <rect width="1500" height="500" fill="#111111"/>
+  <g mask="url(#gridmask)">
+    <rect width="1500" height="500" fill="url(#minor)"/>
+    <rect width="1500" height="500" fill="url(#major)"/>
+  </g>
+
+  <!-- Left: message -->
+  <g transform="translate(120 0)">
+    <rect x="0" y="122" width="10" height="10" fill="#FF6A1A"/>
+    <text x="22" y="132" class="mono" font-size="14" letter-spacing="3.2" fill="#8C8C8C">FORGEAI  /  TESTNET</text>
+
+    <text x="-4" y="232" class="display" font-size="80" letter-spacing="-2" fill="#F2F2F2">BUILD<tspan fill="#FF6A1A">.</tspan> TRAIN<tspan fill="#FF6A1A">.</tspan> DEPLOY<tspan fill="#FF6A1A">.</tspan></text>
+
+    <text x="0" y="284" class="sans" font-size="24" fill="#A3A3A3">The environment for autonomous agents.</text>
+  </g>
+
+  <!-- Bottom rail: the forging cycle, kept right of the profile image -->
+  <g transform="translate(440 0)" class="mono">
+    <text x="0" y="370" font-size="11" letter-spacing="2.6" fill="#5E5E5E">THE FORGING CYCLE</text>
+    <line x1="0" y1="398" x2="490" y2="398" stroke="#383838" stroke-width="1"/>
+    <rect x="0"   y="393" width="10" height="10" fill="#FF6A1A"/>
+    <rect x="120" y="393" width="10" height="10" fill="#111111" stroke="#6A6A6A" stroke-width="1.2"/>
+    <rect x="240" y="393" width="10" height="10" fill="#111111" stroke="#6A6A6A" stroke-width="1.2"/>
+    <rect x="360" y="393" width="10" height="10" fill="#111111" stroke="#6A6A6A" stroke-width="1.2"/>
+    <rect x="480" y="393" width="10" height="10" fill="#111111" stroke="#6A6A6A" stroke-width="1.2"/>
+    <g font-size="12.5" letter-spacing="1.4">
+      <text x="0"   y="428" fill="#D9D9D9"><tspan fill="#FF6A1A">01</tspan> CREATE</text>
+      <text x="120" y="428" fill="#A3A3A3"><tspan fill="#5E5E5E">02</tspan> EQUIP</text>
+      <text x="240" y="428" fill="#A3A3A3"><tspan fill="#5E5E5E">03</tspan> EXECUTE</text>
+      <text x="360" y="428" fill="#A3A3A3"><tspan fill="#5E5E5E">04</tspan> EVALUATE</text>
+      <text x="480" y="428" fill="#A3A3A3"><tspan fill="#5E5E5E">05</tspan> EVOLVE</text>
+    </g>
+  </g>
+
+  <!-- Right: the mark drawn as a construction study. 20 x 20 units, 16px per unit. -->
+  <g transform="translate(1040 90)">
+    <!-- construction lines -->
+    <g stroke="#262626" stroke-width="1">
+      <line x1="-40" y1="0"   x2="420" y2="0"/>
+      <line x1="-40" y1="320" x2="420" y2="320"/>
+      <line x1="0"   y1="-60" x2="0"   y2="380"/>
+      <line x1="320" y1="-60" x2="320" y2="0"/>
+      <line x1="112" y1="112" x2="112" y2="380"/>
+      <line x1="208" y1="320" x2="208" y2="380"/>
+    </g>
+    <!-- registration marks -->
+    <g stroke="#6A6A6A" stroke-width="1.2">
+      <path d="M-28 -20h16M-20 -28v16"/>
+      <path d="M332 -20h16M340 -28v16"/>
+      <path d="M-28 340h16M-20 332v16"/>
+    </g>
+
+    <circle cx="160" cy="272" r="150" fill="url(#glow)"/>
+
+    <!-- frame blocks -->
+    <rect x="0" y="0"   width="320" height="80"  fill="#151515"/>
+    <rect x="0" y="0"   width="320" height="80"  fill="url(#hatch)" stroke="#6A6A6A" stroke-width="1.5"/>
+    <rect x="0" y="112" width="80"  height="208" fill="#151515"/>
+    <rect x="0" y="112" width="80"  height="208" fill="url(#hatch)" stroke="#6A6A6A" stroke-width="1.5"/>
+    <!-- skill matrix -->
+    <rect x="112" y="112" width="160" height="80" fill="#262626" stroke="#8C8C8C" stroke-width="1.5"/>
+    <!-- agent core -->
+    <rect x="112" y="224" width="96" height="96" fill="#FF6A1A"/>
+
+    <!-- callouts -->
+    <g class="mono" font-size="11" letter-spacing="2" fill="#7A7A7A">
+      <line x1="272" y1="152" x2="298" y2="152" stroke="#5E5E5E" stroke-width="1"/>
+      <rect x="296" y="150" width="4" height="4" fill="#8C8C8C"/>
+      <text x="308" y="156">SKILL MATRIX</text>
+
+      <line x1="208" y1="272" x2="240" y2="272" stroke="#FF6A1A" stroke-width="1"/>
+      <rect x="238" y="270" width="4" height="4" fill="#FF6A1A"/>
+      <text x="250" y="276" fill="#D9D9D9">AGENT CORE</text>
+    </g>
+  </g>
+
+  <text x="1460" y="456" class="mono" font-size="10.5" letter-spacing="2.4" fill="#4A4A4A" text-anchor="end">FIG. 01  FORGE MARK</text>
+</svg>
+</body>
+</html>

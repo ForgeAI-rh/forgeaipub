@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS docs (
+  kind TEXT NOT NULL,
+  id TEXT NOT NULL,
+  body TEXT NOT NULL,
+  PRIMARY KEY (kind, id)
+);
