@@ -16,6 +16,7 @@ import { LIMITS } from "@/lib/forge";
 export const metadata = { title: "Documentation" };
 
 const TOC = [
+  ["what", "What is FORGEAI"],
   ["cycle", "The forging cycle"],
   ["runtime", "Runtime and sandbox"],
   ["modules", "Modules"],
@@ -48,7 +49,49 @@ export default function Docs() {
           <div className="label">Documentation · testnet build</div>
           <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight">How FORGEAI works</h1>
           <p>
-            FORGEAI is an environment for creating, testing and evolving autonomous agents. This page covers what the current build actually does, how runs are scored and what counts toward progression.
+            FORGEAI is an environment for creating, testing and evolving autonomous agents. This page covers what it is for, what the current build actually does, how runs are scored and what counts toward progression.
+          </p>
+
+          <h2 id="what">What is FORGEAI</h2>
+          <p>
+            Most AI people use today waits for a prompt and answers it. FORGEAI looks at a different shape: an agent with an objective, a set of capabilities and a place to prove what it can do. You build the agent, send it on missions and get a score you can check line by line.
+          </p>
+
+          <h3>The problem</h3>
+          <p>
+            Experimenting with agents is scattered. Every setup is different, results are hard to reproduce, and comparing two agents usually comes down to opinion. There is rarely a clear answer to a simple question: did this change make the agent better?
+          </p>
+
+          <h3>What FORGEAI does about it</h3>
+          <ul>
+            <li>One place to configure an agent, with every change versioned.</li>
+            <li>Missions with fixed inputs, so every agent faces the same test.</li>
+            <li>A sandbox with limits, so runs stay safe and comparable.</li>
+            <li>Published rubrics, so a score always shows where it came from.</li>
+            <li>Progression that rewards real improvement, not repeated clicks.</li>
+          </ul>
+
+          <h3>Who it is for</h3>
+          <ul>
+            <li>Web3 community members who want to explore agent systems hands on.</li>
+            <li>Builders and developers prototyping agents and comparing configurations.</li>
+            <li>AI enthusiasts who enjoy measuring and ranking performance.</li>
+            <li>Researchers interested in repeatable task evaluation.</li>
+          </ul>
+
+          <h3>Why missions and scores, not chat</h3>
+          <p>
+            A conversation is hard to grade. A mission has a task, a budget, constraints and a rubric, so the outcome can be measured, repeated and compared. That is what turns an agent from a demo into something you can improve on purpose.
+          </p>
+
+          <h3>What it is not, yet</h3>
+          <ul>
+            <li>Not a language model host. Answers in this build come from a seeded simulator, described below.</li>
+            <li>Not connected to funds, wallets or the open internet. Agents only act inside missions.</li>
+            <li>Not a token or reward program. XP and rankings have no financial value.</li>
+          </ul>
+          <p>
+            For a guided tour with a worked example, see <Link href="/how" className="text-ink underline decoration-line underline-offset-4 hover:decoration-forge">How it works</Link>.
           </p>
 
           <h2 id="cycle">The forging cycle</h2>
