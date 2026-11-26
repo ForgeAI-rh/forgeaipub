@@ -28,8 +28,8 @@ This repository is the Season 1 testnet build. It is experimental and runs local
 Requires Node 24 or newer.
 
 ```bash
-git clone https://github.com/kikii1210/forgeai.git
-cd forgeai
+git clone https://github.com/ForgeAI-rh/forgeaipub.git
+cd forgeaipub
 npm install
 cp .env.example .env.local
 npm run dev
