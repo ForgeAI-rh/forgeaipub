@@ -12,7 +12,7 @@ import type { Category } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-const CATS: Category[] = ["reasoning", "research", "planning", "structure", "memory", "simulation", "adaptation", "compute"];
+const CATS: Category[] = ["reasoning", "research", "planning", "structure", "memory", "simulation", "adaptation"];
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -96,7 +96,6 @@ export default async function AgentProfile({
             <Row k="Role" v={getPreset(agent.role)?.name} />
             <Row k="Style" v={getStyle(agent.style)?.name} />
             <Row k="Visibility" v={agent.visibility} />
-            <Row k="Compute" v={!agent.gpu ? "No GPU" : agent.gpu === "auto" ? "Auto router" : agent.gpu.replace(/^NVIDIA (GeForce )?/, "")} />
           </div>
           <div className="border-t border-line px-5 py-4">
             <div className="flex flex-wrap gap-1.5">

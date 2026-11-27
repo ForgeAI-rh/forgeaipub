@@ -5,7 +5,6 @@ import { PageHead } from "@/components/ui";
 import { read } from "@/lib/db";
 import { agentProgress } from "@/lib/forge";
 import { agentCode } from "@/lib/format";
-import { getCatalog } from "@/lib/gpu";
 import { currentAccountId } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +17,6 @@ export default async function EditAgent({ params }: { params: Promise<{ id: stri
   const agent = db.agents.find((a) => a.id === id);
   if (!agent || agent.ownerId !== me) notFound();
   const p = agentProgress(db, agent.id);
-  const { gpus } = await getCatalog();
 
   return (
     <div className="space-y-8">
@@ -30,7 +28,6 @@ export default async function EditAgent({ params }: { params: Promise<{ id: stri
         level={p.level}
         submitLabel="Save changes"
         idPreview={agentCode(agent.id)}
-        gpus={gpus}
         defaults={{
           name: agent.name,
           role: agent.role,
@@ -38,7 +35,6 @@ export default async function EditAgent({ params }: { params: Promise<{ id: stri
           objective: agent.objective,
           skills: agent.skills,
           visibility: agent.visibility,
-          gpu: agent.gpu ?? "",
         }}
       />
     </div>

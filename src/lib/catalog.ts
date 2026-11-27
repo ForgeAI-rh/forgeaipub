@@ -13,7 +13,6 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   memory: "Memory",
   simulation: "Simulation",
   adaptation: "Adaptation",
-  compute: "Compute",
 };
 
 export const PRESETS: Preset[] = [
@@ -27,7 +26,7 @@ export const PRESETS: Preset[] = [
     id: "planner",
     name: "Planner",
     summary: "Thinks in sequences. Handles budgets, pipelines and changing conditions well.",
-    affinity: { planning: 0.14, simulation: 0.06, adaptation: 0.04, compute: 0.04 },
+    affinity: { planning: 0.14, simulation: 0.06, adaptation: 0.04 },
   },
   {
     id: "researcher",
@@ -39,7 +38,7 @@ export const PRESETS: Preset[] = [
     id: "executor",
     name: "Executor (simulation only)",
     summary: "Acts inside simulated environments. Never touches real funds or external systems.",
-    affinity: { simulation: 0.14, planning: 0.04, adaptation: 0.06, compute: 0.1 },
+    affinity: { simulation: 0.14, planning: 0.04, adaptation: 0.06 },
   },
 ];
 
@@ -171,38 +170,6 @@ export const SKILLS: Skill[] = [
     limits: "Reacts to announced changes. It does not predict them.",
     bonus: { adaptation: 0.18 },
     unlockLevel: 3,
-  },
-  {
-    id: "gpu_router",
-    name: "GPU Router",
-    category: "compute",
-    version: "1.0",
-    summary: "Plans GPU work: batch sizes, step counts, what fits in memory.",
-    limits: "Plans the work on the GPU it is given. It does not pick the card.",
-    bonus: { compute: 0.16 },
-    unlockLevel: 1,
-  },
-  {
-    id: "mixed_precision",
-    name: "Mixed Precision",
-    category: "compute",
-    version: "1.0",
-    summary: "Runs in lower precision so jobs need about 40 percent less GPU memory.",
-    limits: "Small accuracy cost on compute tasks. Cannot make a job fit a card that is far too small.",
-    bonus: { compute: -0.03 },
-    vramFactor: 0.6,
-    unlockLevel: 1,
-  },
-  {
-    id: "checkpointing",
-    name: "Checkpointing",
-    category: "compute",
-    version: "1.0",
-    summary: "Saves progress during GPU jobs and resumes if the card is taken away.",
-    limits: "Resuming costs extra GPU time. Does not help when a job does not fit in memory.",
-    bonus: { compute: 0.04 },
-    checkpoint: true,
-    unlockLevel: 2,
   },
 ];
 
@@ -384,56 +351,6 @@ export const MISSIONS: Mission[] = [
   },
 ];
 
-MISSIONS.push(
-  {
-    slug: "render",
-    name: "Render Run",
-    code: "M08",
-    version: "1.0",
-    focus: "compute",
-    mechanic: "compute",
-    summary: "Render a 96 frame sequence on a GPU. Faster cards finish sooner and cost more per hour.",
-    objective: "Deliver every frame batch at the quality bar, inside the time and credit budget.",
-    input: "A synthetic scene and five frame batches. Needs a GPU with at least 20 GB of memory.",
-    constraints: ["GPU with 20 GB or more", "Paid in demo credits at live market rates", "Budget of 40 steps"],
-    budget: 40,
-    compute: { vram: 20, baseSeconds: 3600 },
-    rubric: { quality: 45, completion: 20, efficiency: 25, compliance: 10 },
-    rubricNotes: { ...notes, efficiency: "Credits spent compared with the cheapest card that fits." },
-    tasks: [
-      { id: "G1", prompt: "Batch 1. 24 frames at 1080p. Pick the sampler steps that meet the quality bar.", answer: "30 steps", distractors: ["8 steps", "150 steps"], difficulty: 0.35, category: "compute", steps: 6 },
-      { id: "G2", prompt: "Batch 2 shows banding in dark areas. Fix?", answer: "Render at higher bit depth", distractors: ["Lower the resolution", "Skip the batch"], difficulty: 0.45, category: "compute", steps: 6 },
-      { id: "G3", prompt: "Batch 3 will not finish in time at current settings. Best move?", answer: "Fewer steps, same resolution", distractors: ["Raise the resolution", "Restart the whole run"], difficulty: 0.5, category: "compute", steps: 7 },
-      { id: "G4", prompt: "Upscale pass from 1080p to 4K. Which goes first?", answer: "Denoise, then upscale", distractors: ["Upscale, then denoise", "Skip denoise"], difficulty: 0.5, category: "compute", steps: 6 },
-      { id: "G5", prompt: "Export the sequence record.", answer: "FORMAT=png FRAMES=96 FPS=24", distractors: ["png 96 frames", "FORMAT=jpg;FRAMES=96"], difficulty: 0.5, category: "structure", steps: 5 },
-    ],
-  },
-  {
-    slug: "finetune",
-    name: "Fine Tune Trial",
-    code: "M09",
-    version: "1.0",
-    focus: "compute",
-    mechanic: "compute",
-    summary: "Fine tune a 7B model on a GPU. Memory decides what fits, the card decides the bill.",
-    objective: "Make the right training calls and finish the run inside the time and credit budget.",
-    input: "A synthetic training job on a 7B model. Needs a GPU with at least 40 GB of memory.",
-    constraints: ["GPU with 40 GB or more", "Paid in demo credits at live market rates", "Budget of 46 steps"],
-    budget: 46,
-    compute: { vram: 40, baseSeconds: 7200 },
-    rubric: { quality: 50, completion: 20, efficiency: 20, compliance: 10 },
-    rubricNotes: { ...notes, efficiency: "Credits spent compared with the cheapest card that fits." },
-    tasks: [
-      { id: "T1", prompt: "A 7B model in fp16 needs about how much GPU memory for weights alone?", answer: "14 GB", distractors: ["7 GB", "28 GB"], difficulty: 0.35, category: "compute", steps: 6 },
-      { id: "T2", prompt: "Training does not fit on the card. First thing to try?", answer: "Gradient checkpointing", distractors: ["Bigger batch size", "Higher learning rate"], difficulty: 0.45, category: "compute", steps: 7 },
-      { id: "T3", prompt: "Loss spikes and turns NaN after 200 steps. Likely fix?", answer: "Lower the learning rate", distractors: ["Train longer", "Remove the validation set"], difficulty: 0.45, category: "compute", steps: 7 },
-      { id: "T4", prompt: "Validation loss rises while training loss keeps falling.", answer: "Stop early", distractors: ["Raise the learning rate", "Add more epochs"], difficulty: 0.5, category: "compute", steps: 6 },
-      { id: "T5", prompt: "Which setup fits a 70B model in fp8 on one card?", answer: "One 80 GB GPU", distractors: ["One 24 GB GPU", "One 48 GB GPU"], difficulty: 0.55, category: "compute", steps: 6 },
-      { id: "T6", prompt: "Write the run summary.", answer: "EPOCHS=3 LR=0.00002 STOP=early", distractors: ["epochs 3 lr 0.00002", "EPOCHS=3;LR=0.0002"], difficulty: 0.5, category: "structure", steps: 5 },
-    ],
-  },
-);
-
 export interface BadgeDef {
   slug: string;
   name: string;
@@ -445,8 +362,7 @@ export const BADGES: BadgeDef[] = [
   { slug: "precision", name: "Precision", description: "Scored 90 or more on any mission." },
   { slug: "clean_run", name: "Clean Run", description: "Finished every task in a mission with zero format violations." },
   { slug: "range", name: "Range", description: "Valid completions across four different mission focus areas." },
-  { slug: "full_cycle", name: "Full Cycle", description: "Valid completion of every starter mission." },
-  { slug: "first_light", name: "First Light", description: "First valid GPU mission." },
+  { slug: "full_cycle", name: "Full Cycle", description: "Valid completion of all seven starter missions." },
   { slug: "season_one", name: "Season 1", description: "Took part in Season 1 of the open demo." },
 ];
 
@@ -459,7 +375,7 @@ export interface Season {
 
 export const SEASONS: Season[] = [
   { id: 0, name: "Season 0", status: "closed", summary: "Closed reliability test. Demo data only." },
-  { id: 1, name: "Season 1", status: "active", summary: "Open demo with nine missions, two of them on GPUs." },
+  { id: 1, name: "Season 1", status: "active", summary: "Open demo onboarding with seven starter missions." },
   { id: 2, name: "Season 2", status: "planned", summary: "More mission types and a fuller registry." },
 ];
 

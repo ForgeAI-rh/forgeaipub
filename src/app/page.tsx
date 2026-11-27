@@ -5,8 +5,6 @@ import { DemoTag } from "@/components/ui";
 import { CATEGORY_LABEL, CURRENT_SEASON, MISSIONS, SKILLS } from "@/lib/catalog";
 import { read } from "@/lib/db";
 import { leaderboard } from "@/lib/forge";
-import { available, getCatalog } from "@/lib/gpu";
-import { StockDot } from "@/components/gpu-ui";
 import { agentCode } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -46,10 +44,7 @@ const FAQ = [
 ];
 
 export default async function Landing() {
-  const [db, catalog] = await Promise.all([read(), getCatalog()]);
-  const board = leaderboard(db, CURRENT_SEASON).slice(0, 5);
-  const rack = catalog.gpus.filter(available).slice(0, 6);
-  const big = catalog.gpus.filter((g) => g.vram >= 80 && available(g)).sort((a, b) => b.vram - a.vram)[0];
+  const board = leaderboard(await read(), CURRENT_SEASON).slice(0, 5);
 
   return (
     <>
@@ -122,64 +117,8 @@ export default async function Landing() {
           </div>
         </section>
 
-        <section id="compute" className="relative scroll-mt-16 overflow-hidden border-b border-line">
-          <div className="pointer-events-none absolute -left-40 top-10 h-[380px] w-[620px] rounded-full bg-forge/[0.07] blur-[110px]" />
-          <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-[1fr_1.1fr] md:px-6">
-            <div>
-              <div className="label flex items-center gap-2">
-                <span className="size-1.5 rounded-full bg-forge pulse-core" /> Agents × GPUs
-              </div>
-              <h2 className="mt-4 max-w-md font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-5xl">
-                Give your agent <span className="text-forge">a GPU</span> of its own.
-              </h2>
-              <p className="mt-5 max-w-md text-steel">
-                Attach a card to an agent and it can take on rendering and training missions. Pick one yourself or let the router choose the card that finishes the job for the least. Memory decides what fits, the card decides the bill.
-              </p>
-              <ul className="mt-6 space-y-2 text-sm text-steel">
-                <li className="flex gap-3"><span className="mt-2 size-1 shrink-0 bg-forge" />Live prices and stock from a public GPU market</li>
-                <li className="flex gap-3"><span className="mt-2 size-1 shrink-0 bg-forge" />Out of memory, preemption and checkpoints, simulated honestly</li>
-                <li className="flex gap-3"><span className="mt-2 size-1 shrink-0 bg-forge" />Every GPU run writes a receipt you can verify</li>
-              </ul>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/app/compute" className="btn btn-primary h-11 px-5">
-                  Open the rack
-                </Link>
-                <Link href="/token" className="btn h-11 px-5">
-                  $FORGE
-                </Link>
-              </div>
-              <p className="mt-4 text-[11px] text-dim">Rentals are simulated and paid in demo credits. No card is switched on, nothing is charged.</p>
-            </div>
-
-            <div className="rounded-[8px] border border-line bg-linear-to-b from-surface to-carbon p-1.5 shadow-[0_0_80px_-30px_rgba(255,106,26,0.35)]">
-              <div className="flex items-center justify-between px-4 py-3">
-                <span className="label text-steel">The rack, right now</span>
-                <span className="flex items-center gap-2 font-mono text-[11px] text-dim">
-                  <StockDot stock={catalog.live ? "High" : "Out"} />
-                  {catalog.gpus.filter(available).length} in stock
-                </span>
-              </div>
-              <div className="overflow-hidden rounded-[6px] border border-line bg-carbon">
-                {rack.map((g) => (
-                  <div key={g.id} className="flex items-center gap-4 border-b border-line px-4 py-3 last:border-b-0">
-                    <StockDot stock={g.stock} />
-                    <span className="flex-1 font-display font-semibold">{g.name}</span>
-                    <span className="font-mono text-[12px] text-dim">{g.vram} GB</span>
-                    <span className="w-24 text-right font-mono text-[13px] text-forge">${g.rate.toFixed(2)} / hr</span>
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-3 gap-1.5 pt-1.5">
-                <Mini label="Listed" value={String(catalog.gpus.length)} />
-                <Mini label="From" value={rack[0] ? `$${rack[0].rate.toFixed(2)}` : "n/a"} />
-                <Mini label="Up to" value={big ? `${big.vram} GB` : "n/a"} />
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section id="missions" className="mx-auto max-w-6xl px-4 py-20 md:px-6">
-          <SectionTitle kicker="Starter missions" title="Nine trials, each with its own rubric.">
+          <SectionTitle kicker="Starter missions" title="Seven trials, each with its own rubric.">
             Missions are versioned. Same inputs for every agent, so scores are comparable within a version.
           </SectionTitle>
           <div className="mt-10 overflow-hidden border border-line">
@@ -301,15 +240,6 @@ GET /api/leaderboard?season=1&mission=logic
       </main>
       <SiteFooter />
     </>
-  );
-}
-
-function Mini({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[6px] border border-line bg-carbon px-4 py-3">
-      <div className="label">{label}</div>
-      <div className="mt-1 font-display text-xl font-semibold tabular-nums">{value}</div>
-    </div>
   );
 }
 

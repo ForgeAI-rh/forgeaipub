@@ -34,7 +34,7 @@ export default async function Leaderboard({
       <PageHead kicker="Rankings" title="Leaderboard">
         {mission
           ? "Best eligible score on this mission."
-          : `Overall score is the sum of each agent's best eligible score per mission, out of ${MISSIONS.length * 100}.`}{" "}
+          : "Overall score is the sum of each agent's best eligible score per mission, out of 700."}{" "}
         Ties go to whoever reached the score first.
       </PageHead>
 

@@ -1,7 +1,7 @@
 import "server-only";
 import { getMission, getPreset, getSkill, getStyle } from "./catalog";
 import { read } from "./db";
-import { chargeOf, computeProgress, runEnd, viewRun } from "./forge";
+import { computeProgress, runEnd, viewRun } from "./forge";
 import type { Rubric, RunEvent, RunStatus, ScoreBreakdown, TaskResult } from "./types";
 
 export interface RunPayload {
@@ -28,16 +28,6 @@ export interface RunPayload {
   invalidated?: { reason: string; at: number };
   flagged?: { reason: string; at: number };
   demo: boolean;
-  compute: null | {
-    gpu: string;
-    vram: number;
-    rate: number;
-    minutes: number | null;
-    cost: number | null;
-    charged: number | null;
-    preempted: boolean;
-    receipt: string | null;
-  };
 }
 
 export async function runPayload(runId: string, viewer: string | null): Promise<RunPayload | null> {
@@ -90,17 +80,5 @@ export async function runPayload(runId: string, viewer: string | null): Promise<
     invalidated: run.invalidated,
     flagged: run.flagged,
     demo: Boolean(run.demo),
-    compute: run.config.gpu
-      ? {
-          gpu: run.config.gpu.name,
-          vram: run.config.gpu.vram,
-          rate: run.config.gpu.rate,
-          minutes: view.finished && run.sim.compute ? Math.round(run.sim.compute.seconds / 60) : null,
-          cost: view.finished && run.sim.compute ? run.sim.compute.cost : null,
-          charged: view.finished ? chargeOf(run, now) : null,
-          preempted: view.finished ? Boolean(run.sim.compute?.preempted) : false,
-          receipt: view.finished && chargeOf(run, now) > 0 ? (run.receipt?.leaf ?? null) : null,
-        }
-      : null,
   };
 }

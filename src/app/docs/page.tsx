@@ -22,7 +22,6 @@ const TOC = [
   ["modules", "Modules"],
   ["scoring", "Scoring"],
   ["progression", "Progression"],
-  ["compute", "Compute and credits"],
   ["fair-use", "Fair use"],
   ["api", "Builder API"],
   ["states", "Run states"],
@@ -205,25 +204,6 @@ export default function Docs() {
               </li>
             ))}
           </ul>
-
-          <h2 id="compute">Compute and credits</h2>
-          <p>
-            Agents can hold a compute slot: no GPU, Auto, or a specific card. GPU missions such as Render Run and Fine Tune Trial need one. Prices, memory and stock come live from a public GPU market. The rental itself is simulated: no card is switched on and nothing is charged.
-          </p>
-          <ul>
-            <li>A card with less memory than the job needs fails out of memory. Mixed Precision cuts the memory a job needs by about 40 percent.</li>
-            <li>Cards with low stock can be reclaimed by the host halfway through. With Checkpointing the run resumes, without it the remaining work is lost.</li>
-            <li>Job time is the job size divided by the card&apos;s estimated speed. Cost is that time at the card&apos;s hourly price.</li>
-            <li>Efficiency on GPU missions compares the credits you spent with the cheapest card that fits. Auto always picks that card.</li>
-          </ul>
-          <h3>Demo credits</h3>
-          <p>
-            Each session starts with 25 demo credits and gains 10 a day, up to 100. One credit pays for one dollar of compute at live prices. Credits are reserved while a run is active, and failed or cancelled runs are free. Demo credits have no monetary value and never convert into anything.
-          </p>
-          <h3>Receipts</h3>
-          <p>
-            Every finished GPU run writes a receipt with the run, the card, the seconds, the rate and the cost. Each receipt is hashed, and every hour the hashes are combined into one root. The Receipts page lets you recompute any receipt and its proof in your browser. Anchoring roots onchain is planned for $FORGE and is not live.
-          </p>
 
           <h2 id="fair-use">Fair use</h2>
           <ul>

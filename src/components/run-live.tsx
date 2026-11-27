@@ -130,7 +130,7 @@ export function RunLive({ initial }: { initial: RunPayload }) {
       )}
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="panel flex min-w-0 flex-col">
+        <div className="panel flex flex-col">
           <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
             <span className="label">Execution log · sanitized</span>
             <span className="font-mono text-[11px] text-dim">{live ? clock(run.elapsedMs) : `${(run.durationMs / 1000).toFixed(1)}s total`}</span>
@@ -152,7 +152,7 @@ export function RunLive({ initial }: { initial: RunPayload }) {
           </ol>
         </div>
 
-        <div className="min-w-0 space-y-4">
+        <div className="space-y-4">
           <div className="panel tick p-5">
             <div className="label">Score</div>
             <div className="mt-3 flex items-end gap-2">
@@ -174,25 +174,6 @@ export function RunLive({ initial }: { initial: RunPayload }) {
             <Line k="Progression" v={run.xp === null ? "pending" : run.xp > 0 ? `+${run.xp} XP` : "No XP"} hl={Boolean(run.xp)} />
             {run.badges.length > 0 && <Line k="Badges" v={run.badges.join(", ")} hl />}
             <Line k="Steps used" v={run.stepsUsed === null ? "··" : `${run.stepsUsed} of ${run.mission.budget}`} />
-            {run.compute && (
-              <>
-                <Line k="GPU" v={`${run.compute.gpu} · ${run.compute.vram} GB`} />
-                <Line k="GPU time" v={run.compute.minutes === null ? "··" : `${run.compute.minutes} min at $${run.compute.rate.toFixed(2)}/hr`} />
-                <Line
-                  k="Credits charged"
-                  v={run.compute.charged === null ? "reserved" : run.compute.charged > 0 ? run.compute.charged.toFixed(4) : "0, failed runs are free"}
-                  hl={Boolean(run.compute.charged)}
-                />
-                {run.compute.receipt && (
-                  <div className="flex justify-between gap-4 px-4 py-2.5">
-                    <span className="text-dim">Receipt</span>
-                    <Link href="/app/receipts" className="max-w-[60%] truncate font-mono text-[11px] text-steel hover:text-forge" title={run.compute.receipt}>
-                      {run.compute.receipt}
-                    </Link>
-                  </div>
-                )}
-              </>
-            )}
             <Line k="Runtime" v={run.runtimeVersion} />
             <Line k="Evaluator" v={run.evaluatorVersion} />
             <Line k="Config" v={`${run.config.role} · ${run.config.style}`} />
