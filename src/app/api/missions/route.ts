@@ -15,6 +15,7 @@ export async function GET() {
       focus: m.focus,
       summary: m.summary,
       budget: m.budget,
+      compute: m.compute ?? null,
       rubric: m.rubric,
       tasks: m.tasks.length,
       paused: Boolean(control[m.slug]?.paused),

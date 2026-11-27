@@ -5,7 +5,8 @@ export type Category =
   | "structure"
   | "memory"
   | "simulation"
-  | "adaptation";
+  | "adaptation"
+  | "compute";
 
 export type StyleId = "methodical" | "balanced" | "rapid";
 
@@ -35,6 +36,8 @@ export interface Skill {
   stepFactor?: number;
   compliance?: number;
   recovery?: boolean;
+  vramFactor?: number;
+  checkpoint?: boolean;
   unlockLevel: number;
 }
 
@@ -58,7 +61,7 @@ export interface Rubric {
   compliance: number;
 }
 
-export type Mechanic = "standard" | "chain" | "memory" | "strategy" | "adaptive";
+export type Mechanic = "standard" | "chain" | "memory" | "strategy" | "adaptive" | "compute";
 
 export interface Mission {
   slug: string;
@@ -73,6 +76,7 @@ export interface Mission {
   context?: string[];
   constraints: string[];
   budget: number;
+  compute?: { vram: number; baseSeconds: number };
   rubric: Rubric;
   rubricNotes: Record<keyof Rubric, string>;
   tasks: Task[];
@@ -100,6 +104,7 @@ export type EventType =
   | "recovery"
   | "halted"
   | "budget"
+  | "gpu"
   | "completed"
   | "failed"
   | "evaluating"
@@ -140,6 +145,17 @@ export interface SimOutcome {
   budget: number;
   durationMs: number;
   summary: string;
+  compute?: { seconds: number; cost: number; preempted: boolean };
+}
+
+export interface GpuSnapshot {
+  id: string;
+  name: string;
+  vram: number;
+  rate: number;
+  speed: number;
+  stock: string;
+  refCost: number;
 }
 
 export interface ConfigSnapshot {
@@ -147,6 +163,7 @@ export interface ConfigSnapshot {
   style: StyleId;
   skills: string[];
   level: number;
+  gpu?: GpuSnapshot | null;
 }
 
 export interface Account {
@@ -163,6 +180,7 @@ export interface Agent {
   style: StyleId;
   objective: string;
   skills: string[];
+  gpu?: string;
   configVersion: number;
   visibility: "public" | "private";
   status: "active" | "archived" | "suspended";
@@ -185,6 +203,7 @@ export interface Run {
   sim: SimOutcome;
   runtimeVersion: string;
   evaluatorVersion: string;
+  receipt?: { leaf: string; at: number };
   cancelledAt?: number;
   invalidated?: { reason: string; at: number };
   flagged?: { reason: string; at: number };

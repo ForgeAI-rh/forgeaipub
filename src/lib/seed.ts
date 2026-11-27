@@ -39,7 +39,7 @@ export function seedDemo(db: DbShape) {
     };
     db.agents.push(agent);
 
-    MISSIONS.forEach((mission, m) => {
+    MISSIONS.filter((x) => !x.compute).forEach((mission, m) => {
       const passes: Array<[number, number]> = [];
       if ((idx + m) % 3 !== 0) passes.push([0, 20 + m]);
       if ((idx * 7 + m) % 4 !== 1) passes.push([1, 2 + ((idx * 5 + m * 3) % 9)]);

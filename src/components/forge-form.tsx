@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import type { FormState } from "@/app/actions";
 import { CATEGORY_LABEL, PRESETS, SKILLS, SKILL_SLOTS, STYLES } from "@/lib/catalog";
 import { competence } from "@/lib/engine";
+import type { Gpu } from "@/lib/gpu";
 import type { Category, StyleId } from "@/lib/types";
 
 type Defaults = {
@@ -13,9 +14,10 @@ type Defaults = {
   objective: string;
   skills: string[];
   visibility: "public" | "private";
+  gpu?: string;
 };
 
-const CATS: Category[] = ["reasoning", "research", "planning", "structure", "memory", "simulation", "adaptation"];
+const CATS: Category[] = ["reasoning", "research", "planning", "structure", "memory", "simulation", "adaptation", "compute"];
 
 export function ForgeForm({
   action,
@@ -23,12 +25,14 @@ export function ForgeForm({
   level,
   submitLabel,
   idPreview,
+  gpus = [],
 }: {
   action: (state: FormState, form: FormData) => Promise<FormState>;
   defaults?: Defaults;
   level: number;
   submitLabel: string;
   idPreview?: string;
+  gpus?: Gpu[];
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const [name, setName] = useState(defaults?.name ?? "");
@@ -36,6 +40,8 @@ export function ForgeForm({
   const [style, setStyle] = useState<StyleId>(defaults?.style ?? "balanced");
   const [skills, setSkills] = useState<string[]>(defaults?.skills ?? []);
   const [objective, setObjective] = useState(defaults?.objective ?? "");
+  const [gpu, setGpu] = useState(defaults?.gpu ?? "");
+  const picked = gpus.find((g) => g.id === gpu);
 
   const toggle = (id: string) =>
     setSkills((cur) => (cur.includes(id) ? cur.filter((s) => s !== id) : cur.length >= SKILL_SLOTS ? cur : [...cur, id]));
@@ -127,6 +133,40 @@ export function ForgeForm({
               );
             })}
           </div>
+        </Block>
+
+        <Block n="04" title="Compute" aside="optional">
+          <p className="text-sm text-steel">
+            A compute slot lets the agent take GPU missions. Rentals are simulated and paid in demo credits at live market prices.
+          </p>
+          <select name="gpu" value={gpu} onChange={(e) => setGpu(e.target.value)} className="input">
+            <option value="">No GPU</option>
+            <option value="auto">Auto: the cheapest card that fits each job</option>
+            <optgroup label="Pick a card">
+              {gpus.filter((g) => g.vendor === "NVIDIA").map((g) => (
+                <option key={g.id} value={g.id} disabled={g.stock === "Out" && g.id !== defaults?.gpu}>
+                  {g.name} · {g.vram} GB · ${g.rate.toFixed(2)}/hr{g.stock === "Out" ? " · out of stock" : ""}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+          {picked && (
+            <div className="grid grid-cols-3 gap-2 font-mono text-[12px]">
+              <div className="rounded-[3px] border border-line p-2.5">
+                <div className="text-dim">Memory</div>
+                <div className="mt-0.5 text-ink">{picked.vram} GB</div>
+              </div>
+              <div className="rounded-[3px] border border-line p-2.5">
+                <div className="text-dim">Speed</div>
+                <div className="mt-0.5 text-ink">{picked.speed.toFixed(1)}x</div>
+              </div>
+              <div className="rounded-[3px] border border-line p-2.5">
+                <div className="text-dim">Per hour</div>
+                <div className="mt-0.5 text-forge">${picked.rate.toFixed(2)}</div>
+              </div>
+            </div>
+          )}
+          {gpu === "auto" && <p className="text-xs text-dim">At run time the router picks the in stock card that finishes the job for the fewest credits.</p>}
         </Block>
       </div>
 

@@ -43,7 +43,10 @@ Open http://localhost:3000. First boot seeds eight demo agents so the leaderboar
 |---|---|
 | **Agent Forge** | Name, role, execution style, objective and four module slots, with a live competence preview |
 | **Skill Matrix** | Ten predefined modules. Each states what it cannot do. Some unlock at higher levels |
-| **Seven missions** | Logic, Research, Strategy, Efficiency, Memory, Chain of Tasks and Adaptive, each with its own rubric and budget |
+| **Nine missions** | Logic, Research, Strategy, Efficiency, Memory, Chain of Tasks, Adaptive, plus two GPU missions: Render Run and Fine Tune Trial |
+| **Compute** | Agents get a GPU slot. Live prices and stock from a public GPU market, an auto router, out of memory, preemption and checkpoints. Rentals are simulated |
+| **Receipts** | Every GPU run writes a hashed receipt, rolled into an hourly root you can verify in the browser |
+| **$FORGE** | Planned compute token, documented as a design only. Not launched, no contract |
 | **Live runs** | Status timeline, sanitized event log, outputs next to expected answers, score breakdown |
 | **Progression** | XP for first completions and personal bests only, levels, six badges, reputation |
 | **Rankings** | Season leaderboard with overall and per mission tabs, plus a read only agent registry |
@@ -79,7 +82,7 @@ Run state is derived from time, so there is no worker process to keep alive. The
 | Endpoint | Returns |
 |---|---|
 | `GET /api/missions` | Mission catalog with rubrics and budgets |
-| `GET /api/missions/:slug` | Full spec and task prompts |
+| `GET /api/missions/:slug` | Full spec, task prompts and GPU requirement |
 | `GET /api/leaderboard?season=1&mission=logic` | Ranking rows |
 | `GET /api/runs/:id` | Status, log and score for public agents or your own |
 
@@ -89,6 +92,8 @@ Run state is derived from time, so there is no worker process to keep alive. The
 |---|---|
 | `src/lib/catalog.ts` | Roles, styles, modules, missions, badges, seasons, levels |
 | `src/lib/engine.ts` | Simulator and evaluator |
+| `src/lib/gpu.ts` | Live GPU catalog, speed estimates and the auto router |
+| `src/lib/receipts.ts` | Receipt hashing, hourly merkle roots and proofs |
 | `src/lib/forge.ts` | Run views, eligibility, XP and badges, leaderboard, rate limits |
 | `src/lib/db.ts` | JSON file store with atomic writes |
 | `src/lib/session.ts` | Anonymous session cookie and moderator auth |

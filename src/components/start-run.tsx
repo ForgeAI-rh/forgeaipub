@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { startRun } from "@/app/actions";
 
-type Option = { id: string; name: string; code: string; expected: number; best: number | null; missing: string[] };
+type GpuPlan = { label: string; cost: number | null; minutes?: number; problem: string | null };
+type Option = { id: string; name: string; code: string; expected: number | null; best: number | null; missing: string[]; gpu?: GpuPlan };
 
-export function StartRun({ mission, agents, paused }: { mission: string; agents: Option[]; paused: boolean }) {
+export function StartRun({ mission, agents, paused, credits = null }: { mission: string; agents: Option[]; paused: boolean; credits?: number | null }) {
   const [state, action, pending] = useActionState(startRun, undefined);
   const [pick, setPick] = useState(agents[0]?.id ?? "");
   const current = agents.find((a) => a.id === pick);
@@ -37,10 +38,34 @@ export function StartRun({ mission, agents, paused }: { mission: string; agents:
       </label>
       {current && (
         <div className="space-y-1.5 text-[13px]">
-          <div className="flex justify-between">
-            <span className="text-dim">Expected score</span>
-            <span className="font-mono">~{current.expected}</span>
-          </div>
+          {current.gpu ? (
+            <>
+              <div className="flex justify-between gap-3">
+                <span className="text-dim">GPU</span>
+                <span className="text-right font-mono text-[12px]">{current.gpu.label}</span>
+              </div>
+              {current.gpu.cost !== null && (
+                <div className="flex justify-between">
+                  <span className="text-dim">Est. cost</span>
+                  <span className="font-mono text-forge">
+                    {current.gpu.cost.toFixed(4)} cr · {current.gpu.minutes} min
+                  </span>
+                </div>
+              )}
+              {credits !== null && (
+                <div className="flex justify-between">
+                  <span className="text-dim">Your credits</span>
+                  <span className="font-mono">{credits.toFixed(2)}</span>
+                </div>
+              )}
+              {current.gpu.problem && <p className="rounded-[3px] border border-forge/40 bg-forge/5 p-2 text-xs text-steel">{current.gpu.problem}</p>}
+            </>
+          ) : (
+            <div className="flex justify-between">
+              <span className="text-dim">Expected score</span>
+              <span className="font-mono">~{current.expected}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-dim">Personal best</span>
             <span className="font-mono">{current.best ?? "none yet"}</span>

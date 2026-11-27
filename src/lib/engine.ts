@@ -79,6 +79,22 @@ export function simulate(mission: Mission, config: ConfigSnapshot, seed: number)
     "sandbox",
     `Network denied. Tools allowed: ${skills.map((s) => s.name).join(", ")}. Budget ${mission.budget} steps.`,
   );
+  const job = mission.compute;
+  const vramFactor = skills.reduce((f, s) => f * (s.vramFactor ?? 1), 1);
+  const need = job ? Math.ceil(job.vram * vramFactor) : 0;
+  const gpu = config.gpu ?? null;
+  let preemptAt = -1;
+  let checkpointed = false;
+  if (job) {
+    if (!gpu) return failEarly(mission, events, push, () => clock, "No GPU attached. GPU missions need a compute slot.");
+    push("gpu", `${gpu.name} attached · ${gpu.vram} GB · $${gpu.rate.toFixed(2)} per hour, simulated rental.`);
+    if (gpu.vram < need) {
+      return failEarly(mission, events, push, () => clock, `Out of memory. The job needs ${need} GB and ${gpu.name} has ${gpu.vram} GB.`);
+    }
+    push("gpu", `Job loaded in ${need} GB${vramFactor < 1 ? " with mixed precision" : ""}.`, [300, 600]);
+    if (gpu.stock === "Low" && rnd() < 0.3) preemptAt = Math.floor(mission.tasks.length / 2);
+    checkpointed = skills.some((s) => s.checkpoint);
+  }
   if (mission.context?.length) {
     push("context", `Loaded ${mission.context.length} ${mission.mechanic === "memory" ? "brief facts" : "documents"} into the run context.`);
   }
@@ -101,12 +117,24 @@ export function simulate(mission: Mission, config: ConfigSnapshot, seed: number)
         credit: 0,
         violation: false,
         steps: 0,
-        note: halted ? "Not reached, chain halted" : "Not reached, budget spent",
+        note: halted ? (job ? "Not reached, GPU lost" : "Not reached, chain halted") : "Not reached, budget spent",
       });
       continue;
     }
 
     if (task.shift) push("shift", task.shift);
+
+    if (i === preemptAt) {
+      preemptAt = -2;
+      if (checkpointed) {
+        push("recovery", "Card reclaimed by the host. Resumed from the last checkpoint, 12 percent more GPU time.");
+      } else {
+        halted = true;
+        push("halted", "Card reclaimed by the host. No checkpoint, remaining batches lost.");
+        i--;
+        continue;
+      }
+    }
 
     const cost = Math.max(2, Math.round(task.steps * stepFactor * (0.88 + rnd() * 0.24)));
     if (used + cost > mission.budget) {
@@ -168,7 +196,18 @@ export function simulate(mission: Mission, config: ConfigSnapshot, seed: number)
   const attempted = results.filter((r) => r.given !== null);
   const failed = attempted.length === 0 || (mission.mechanic === "chain" && attempted.length === 1 && halted);
 
-  const score = evaluate(mission, results, used);
+  let compute: SimOutcome["compute"];
+  if (job && gpu) {
+    const done = attempted.length / mission.tasks.length;
+    const extra = preemptAt === -2 && checkpointed ? 1.12 : 1;
+    const seconds = Math.round((job.baseSeconds / gpu.speed) * (style?.stepFactor ?? 1) * done * extra);
+    const cost = Math.round((seconds / 3600) * gpu.rate * 10000) / 10000;
+    compute = { seconds, cost, preempted: preemptAt === -2 };
+    push("gpu", `GPU released after ${Math.round(seconds / 60)} min · ${cost.toFixed(4)} credits.`, [300, 600]);
+  }
+
+  const costEff = compute && gpu ? (compute.cost > 0 ? clamp(gpu.refCost / compute.cost) : 1) : undefined;
+  const score = evaluate(mission, results, used, costEff);
   push(failed ? "failed" : "completed", failed ? "Run ended without usable output." : `Execution finished. ${used} of ${mission.budget} steps used.`);
   push("evaluating", "Evaluator scoring against published rubric.", [700, 1100]);
   push("scored", failed ? "Run marked failed. No progression awarded." : `Score ${score.total} / 100.`, [900, 1400]);
@@ -182,6 +221,41 @@ export function simulate(mission: Mission, config: ConfigSnapshot, seed: number)
     budget: mission.budget,
     durationMs: clock,
     summary: summarize(results, halted, budgetHit),
+    compute,
+  };
+}
+
+function failEarly(
+  mission: Mission,
+  events: RunEvent[],
+  push: (type: RunEvent["type"], message: string, gap?: [number, number]) => void,
+  now: () => number,
+  reason: string,
+): SimOutcome {
+  push("failed", reason);
+  push("evaluating", "Evaluator scoring against published rubric.", [700, 1100]);
+  push("scored", "Run marked failed. No progression awarded.", [900, 1400]);
+  const results: TaskResult[] = mission.tasks.map((t) => ({
+    taskId: t.id,
+    prompt: t.prompt,
+    given: null,
+    expected: t.answer,
+    correct: false,
+    credit: 0,
+    violation: false,
+    steps: 0,
+    note: "Not reached",
+  }));
+  return {
+    outcome: "failed",
+    events,
+    results,
+    score: { quality: 0, completion: 0, efficiency: 0, compliance: 0, total: 0 },
+    stepsUsed: 0,
+    budget: mission.budget,
+    durationMs: now(),
+    summary: reason,
+    compute: { seconds: 0, cost: 0, preempted: false },
   };
 }
 
@@ -194,14 +268,15 @@ function summarize(results: TaskResult[], halted: boolean, budgetHit: boolean) {
   return s;
 }
 
-export function evaluate(mission: Mission, results: TaskResult[], used: number): ScoreBreakdown {
+export function evaluate(mission: Mission, results: TaskResult[], used: number, costEff?: number): ScoreBreakdown {
   const total = results.length;
   const attempted = results.filter((r) => r.given !== null);
   const reference = attempted.reduce((s, r) => s + (mission.tasks.find((t) => t.id === r.taskId)?.steps ?? 0), 0);
 
   const quality = results.reduce((s, r) => s + r.credit, 0) / total;
   const completion = attempted.length / total;
-  const efficiency = attempted.length ? clamp(1.5 - used / Math.max(1, reference)) * completion : 0;
+  const stepEff = attempted.length ? clamp(1.5 - used / Math.max(1, reference)) * completion : 0;
+  const efficiency = costEff === undefined ? stepEff : attempted.length ? costEff * completion : 0;
   const compliance = attempted.length ? 1 - attempted.filter((r) => r.violation).length / attempted.length : 0;
 
   const w = mission.rubric;

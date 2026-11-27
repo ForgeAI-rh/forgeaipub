@@ -4,9 +4,10 @@ import { Wordmark } from "./logo";
 const NAV = [
   ["Product", "/#product"],
   ["How it works", "/how"],
+  ["Compute", "/#compute"],
   ["Missions", "/#missions"],
-  ["Registry", "/app/registry"],
   ["Docs", "/docs"],
+  ["$FORGE", "/token"],
 ];
 
 export function SiteHeader() {
@@ -45,7 +46,7 @@ export function SiteFooter() {
           <p className="mt-4 max-w-xs text-sm text-steel">Intelligence isn&apos;t given. It&apos;s forged.</p>
           <p className="mt-6 text-xs text-dim">FORGEAI is a working name. Demo build, experimental.</p>
         </div>
-        <FooterCol title="Product" links={[["Launch App", "/app"], ["Missions", "/app/missions"], ["Leaderboard", "/app/leaderboard"], ["Registry", "/app/registry"]]} />
+        <FooterCol title="Product" links={[["Launch App", "/app"], ["Missions", "/app/missions"], ["Compute", "/app/compute"], ["Leaderboard", "/app/leaderboard"], ["Registry", "/app/registry"], ["$FORGE", "/token"]]} />
         <FooterCol title="Docs" links={[["How it works", "/how"], ["Overview", "/docs"], ["Scoring", "/docs#scoring"], ["Progression", "/docs#progression"], ["Builder API", "/docs#api"]]} />
         <div>
           <div className="label mb-3">Legal and community</div>

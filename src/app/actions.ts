@@ -15,10 +15,12 @@ import {
 } from "@/lib/catalog";
 import { read, write } from "@/lib/db";
 import { seedFrom, simulate } from "@/lib/engine";
-import { agentProgress, startCheck, viewRun } from "@/lib/forge";
+import { agentProgress, creditBalance, startCheck, viewRun } from "@/lib/forge";
+import { AUTO, costFor, getCatalog, route } from "@/lib/gpu";
+import { leafOf } from "@/lib/receipts";
 import { randomId } from "@/lib/ids";
 import { adminSignIn, adminSignOut, clearSession, currentAccountId, ensureAccount, isAdmin } from "@/lib/session";
-import type { StyleId } from "@/lib/types";
+import type { ConfigSnapshot, StyleId } from "@/lib/types";
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -31,6 +33,7 @@ function parseAgentForm(form: FormData, level: number) {
   const objective = String(form.get("objective") ?? "").trim().replace(/\s+/g, " ");
   const visibility = form.get("visibility") === "private" ? "private" : "public";
   const skills = [...new Set(form.getAll("skills").map(String))];
+  const gpu = String(form.get("gpu") ?? "");
 
   if (!NAME_RE.test(name)) return { error: "Name needs 2 to 32 characters: letters, numbers, spaces, dots or apostrophes." };
   if (!getPreset(role)) return { error: "Pick a role." };
@@ -43,13 +46,23 @@ function parseAgentForm(form: FormData, level: number) {
     if (!skill) return { error: "Unknown module selected." };
     if (skill.unlockLevel > level) return { error: `${skill.name} unlocks at level ${skill.unlockLevel}.` };
   }
-  return { value: { name, role, style, objective, visibility, skills } as const };
+  return { value: { name, role, style, objective, visibility, skills, gpu } as const };
+}
+
+async function checkGpu(gpu: string) {
+  if (!gpu || gpu === AUTO) return null;
+  const { gpus } = await getCatalog();
+  const g = gpus.find((x) => x.id === gpu);
+  if (!g) return "That GPU is not in the catalog.";
+  return g.vendor === "NVIDIA" ? null : "Only NVIDIA cards can be attached for now.";
 }
 
 export async function createAgent(_: FormState, form: FormData): Promise<FormState> {
   const owner = await ensureAccount();
   const parsed = parseAgentForm(form, 1);
   if ("error" in parsed) return { error: parsed.error };
+  const gpuError = await checkGpu(parsed.value.gpu);
+  if (gpuError) return { error: gpuError };
 
   const db = await read();
   const count = db.agents.filter((a) => a.ownerId === owner && a.status !== "archived").length;
@@ -81,9 +94,11 @@ export async function updateAgent(agentId: string, _: FormState, form: FormData)
 
   const parsed = parseAgentForm(form, agentProgress(db, agent.id).level);
   if ("error" in parsed) return { error: parsed.error };
+  const gpuError = await checkGpu(parsed.value.gpu);
+  if (gpuError) return { error: gpuError };
   const v = parsed.value;
   const configChanged =
-    v.role !== agent.role || v.style !== agent.style || v.skills.join() !== agent.skills.join();
+    v.role !== agent.role || v.style !== agent.style || v.skills.join() !== agent.skills.join() || v.gpu !== (agent.gpu ?? "");
 
   await write((d) => {
     const a = d.agents.find((x) => x.id === agentId)!;
@@ -122,7 +137,44 @@ export async function startRun(_: FormState, form: FormData): Promise<FormState>
 
   const id = randomId(8);
   const now = Date.now();
-  const config = { role: agent.role, style: agent.style, skills: [...agent.skills], level: agentProgress(db, agent.id).level };
+  const config: ConfigSnapshot = {
+    role: agent.role,
+    style: agent.style,
+    skills: [...agent.skills],
+    level: agentProgress(db, agent.id).level,
+  };
+
+  if (mission.compute) {
+    if (!agent.gpu) return { error: "This mission runs on a GPU. Give the agent a compute slot in its config first." };
+    const { gpus } = await getCatalog();
+    const factor = agent.skills.reduce((f, s) => f * (getSkill(s)?.vramFactor ?? 1), 1);
+    const need = Math.ceil(mission.compute.vram * factor);
+    const pick = agent.gpu === AUTO ? route(gpus, need) : gpus.find((g) => g.id === agent.gpu);
+    if (!pick) return { error: agent.gpu === AUTO ? `No GPU with ${need} GB is in stock right now. Try again shortly.` : "The selected GPU is no longer listed." };
+    if (pick.stock === "Out") return { error: `${pick.name} is out of stock right now. Pick another card or use Auto.` };
+    const ref = route(gpus, need);
+    const est = costFor(pick, mission.compute.baseSeconds);
+    const balance = creditBalance(db, owner).balance;
+    if (est.cost > balance) return { error: `Not enough demo credits. This run needs about ${est.cost.toFixed(2)} and you have ${balance.toFixed(2)}.` };
+    config.gpu = {
+      id: pick.id,
+      name: pick.name,
+      vram: pick.vram,
+      rate: pick.rate,
+      speed: pick.speed,
+      stock: pick.stock,
+      refCost: ref ? costFor(ref, mission.compute.baseSeconds).cost : est.cost,
+    };
+  }
+
+  const sim = simulate(mission, config, seedFrom(`${id}:${agent.configVersion}`));
+  const receipt =
+    sim.compute && sim.compute.cost > 0 && config.gpu
+      ? {
+          at: now + sim.durationMs,
+          leaf: await leafOf({ run: id, gpu: config.gpu.id, seconds: sim.compute.seconds, rate: config.gpu.rate, cost: sim.compute.cost, at: now + sim.durationMs }),
+        }
+      : undefined;
   await write((d) =>
     d.runs.push({
       id,
@@ -135,9 +187,10 @@ export async function startRun(_: FormState, form: FormData): Promise<FormState>
       config,
       createdAt: now,
       startsAt: now,
-      sim: simulate(mission, config, seedFrom(`${id}:${agent.configVersion}`)),
+      sim,
       runtimeVersion: RUNTIME_VERSION,
       evaluatorVersion: EVALUATOR_VERSION,
+      receipt,
     }),
   );
   revalidatePath("/app", "layout");

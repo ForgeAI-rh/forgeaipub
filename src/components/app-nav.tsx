@@ -8,10 +8,11 @@ const ITEMS: Array<[string, string, string]> = [
   ["My Agents", "/app/agents", "01"],
   ["Forge Agent", "/app/forge", "02"],
   ["Missions", "/app/missions", "03"],
-  ["Lab", "/app/runs", "04"],
-  ["Leaderboard", "/app/leaderboard", "05"],
-  ["Registry", "/app/registry", "06"],
-  ["Documentation", "/docs", "07"],
+  ["Compute", "/app/compute", "04"],
+  ["Lab", "/app/runs", "05"],
+  ["Leaderboard", "/app/leaderboard", "06"],
+  ["Registry", "/app/registry", "07"],
+  ["Documentation", "/docs", "08"],
 ];
 
 const FOOT: Array<[string, string]> = [

@@ -98,6 +98,7 @@ export function computeProgress(agentRuns: Run[], now = Date.now()): Progress {
     if (focus.size >= 4) award("range", at);
     if (Object.keys(best).length === MISSIONS.length) award("full_cycle", at);
     if (run.season === 1) award("season_one", at);
+    if (mission?.compute) award("first_light", at);
   }
 
   const lv = levelFor(xp);
@@ -178,6 +179,28 @@ export function startCheck(db: DbShape, accountId: string, agentId: string, miss
     return `This agent ran this mission moments ago. Cooldown ends in ${wait}s.`;
   }
   return null;
+}
+
+/* Demo credits: no monetary value. 1 credit pays for 1 dollar of compute at live market rates. */
+
+export const CREDITS = { start: 25, daily: 10, cap: 100 };
+
+// A GPU run reserves its cost while it runs. Failed and cancelled runs are free.
+export function chargeOf(run: Run, now = Date.now()) {
+  const c = run.sim.compute?.cost ?? 0;
+  if (!c) return 0;
+  const v = viewRun(run, now);
+  if (!v.finished) return c;
+  return v.status === "completed" || v.status === "invalidated" ? c : 0;
+}
+
+export function creditBalance(db: DbShape, accountId: string, now = Date.now()) {
+  const account = db.accounts.find((a) => a.id === accountId);
+  if (!account) return { granted: 0, spent: 0, balance: 0 };
+  const days = Math.max(0, Math.floor((now - account.createdAt) / 86_400_000));
+  const granted = Math.min(CREDITS.start + CREDITS.daily * days, CREDITS.cap);
+  const spent = db.runs.filter((r) => r.ownerId === accountId).reduce((s, r) => s + chargeOf(r, now), 0);
+  return { granted, spent: Math.round(spent * 10000) / 10000, balance: Math.round((granted - spent) * 10000) / 10000 };
 }
 
 export function displayAgentId(id: string) {

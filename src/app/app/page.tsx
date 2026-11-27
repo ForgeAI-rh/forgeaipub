@@ -55,7 +55,9 @@ export default async function Overview({ searchParams }: { searchParams: Promise
   const valid = progress.reduce((s, x) => s + x.p.validRuns, 0);
 
   const lead = [...progress].sort((a, b) => b.p.xp - a.p.xp)[0];
-  const next = MISSIONS.find((m) => !lead.p.best[m.slug] && !db.missions[m.slug]?.paused) ?? MISSIONS.find((m) => !db.missions[m.slug]?.paused);
+  const next =
+    MISSIONS.find((m) => !m.compute && !lead.p.best[m.slug] && !db.missions[m.slug]?.paused) ??
+    MISSIONS.find((m) => !m.compute && !db.missions[m.slug]?.paused);
   const expected = next
     ? forecast(next, { role: lead.agent.role, style: lead.agent.style, skills: lead.agent.skills, level: lead.p.level })
     : null;
